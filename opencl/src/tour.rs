@@ -32,7 +32,7 @@ impl Tour {
             let pos_y = ((self.current_pos as i8) / 8) + self.offset_y[n];
 
             if pos_x >= 0 && pos_x <= 7 && pos_y >= 0 && pos_y <= 7{
-                let pos = pos_y + (pos_x * 8);
+                let pos = pos_x + (pos_y * 8);
 
                 if self.board[pos as usize] == 0{
                     moves.push(pos as usize);
@@ -48,6 +48,7 @@ impl Tour {
             self.current_move += 1;
             self.current_pos = index;
             self.board[index] = self.current_move;
+
             return true;
         }
 
@@ -79,5 +80,6 @@ impl Tour {
             }
             print!("\n");
         }
+        print!("\n");
     }
 }   
