@@ -1,38 +1,30 @@
+use std::time::{Instant};
+
 extern crate ocl;
-use ocl::ProQue;
 
 mod tour;
 use tour::*;
 
+use std::env;
+
 fn main() {
-    let mut tour = Tour::new(10);
-    let mut nodes : Vec<Vec<usize>> = Vec::new();
+    let mut solution_amount = 0;
+    let mut solution_time_ms = 0;
 
-    nodes.push(tour.get_move_list());
+    let args: Vec<String> = env::args().collect();
 
-    loop{
-        if tour.is_solved() {
-            println!("Solved!");
-            tour.print_board();
-            break;
-        }
+    let size : usize = args[1].parse().unwrap();
 
-        let node_option = nodes.pop();
-        let mut node;
+    for n in 0..size.pow(2){
 
-        match node_option {
-            None => break,
-            _ => node = node_option.unwrap()
-        }
+        let mut tour = Tour::new(n, size);
 
-        if node.len() > 0 {
-            let next_move = node.pop().unwrap();
-            nodes.push(node);
+        let now = Instant::now();
+        let result = tour.solve();
 
-            tour.set_move(next_move);
-            nodes.push(tour.get_move_list());
-        }else{
-            tour.move_back();
-        }
+        solution_time_ms += now.elapsed().as_millis();
+        solution_amount += result.len();
     }
+
+    println!("{} milliseconden over gedaan over {} oplossingen", solution_time_ms, solution_amount);
 }
