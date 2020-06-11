@@ -4,8 +4,6 @@ use ocl::ProQue;
 mod tour;
 use tour::*;
 
-use std::io::{self, Read};
-
 fn main() {
     let mut tour = Tour::new(10);
     let mut nodes : Vec<Vec<usize>> = Vec::new();
@@ -37,6 +35,4 @@ fn main() {
             tour.move_back();
         }
     }
-
-    println!("Hello, world!");
 }
