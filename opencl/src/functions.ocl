@@ -1,0 +1,14 @@
+__kernel void add(__global int* buffer, int scalar) {
+    buffer[get_global_id(0)] += scalar;
+}
+
+__kernel void vector_add(__global int* vector1, __global int* vector2, __global int* result){
+    const unsigned int i = get_global_id(0);
+    result[i] = vector1[i] + vector2[i];
+}
+
+__kernel void init_vector(__global int* vector, int offset){
+    const unsigned int i = get_global_id(0);
+
+    vector[i] = i + offset;
+}
