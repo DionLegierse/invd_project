@@ -5,26 +5,31 @@ extern crate ocl;
 mod tour;
 use tour::*;
 
+mod tour_ocl;
+use tour_ocl::knights_tour_opencl;
+
 use std::env;
 
 fn main() {
-    let mut solution_amount = 0;
-    let mut solution_time_ms = 0;
+    // let mut solution_amount = 0;
+    // let mut solution_time_ms = 0;
 
-    let args: Vec<String> = env::args().collect();
+    // let args: Vec<String> = env::args().collect();
 
-    let size : usize = args[1].parse().unwrap();
+    // let size : usize = args[1].parse().unwrap();
 
-    for n in 0..size.pow(2){
+    // for n in 0..size.pow(2){
 
-        let mut tour = Tour::new(n, size);
+    //     let mut tour = Tour::new(n, size);
 
-        let now = Instant::now();
-        let result = tour.solve();
+    //     let now = Instant::now();
+    //     let result = tour.solve();
 
-        solution_time_ms += now.elapsed().as_millis();
-        solution_amount += result.len();
-    }
+    //     solution_time_ms += now.elapsed().as_millis();
+    //     solution_amount += result.len();
+    // }
 
-    println!("{} milliseconden over gedaan over {} oplossingen", solution_time_ms, solution_amount);
+    // println!("{} milliseconden over gedaan over {} oplossingen", solution_time_ms, solution_amount);
+
+    let result = knights_tour_opencl(5).unwrap();
 }
