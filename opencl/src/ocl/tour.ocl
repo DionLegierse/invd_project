@@ -76,7 +76,7 @@ char get_first_move(char * moves){
     return -1;
 }
 
-void print_board(__global char * board, char size){
+void print_board(__global char * board){
     printf("Work item:%d\n", get_global_id(0));
     for (char x = 0; x < size; x++) {
         for (char y = 0; y < size; y++){
@@ -125,7 +125,7 @@ __kernel void knights_tour_solve(__global unsigned int * result_list) {
         }
 
         if(is_solved(&board)){
-            solutions++; 
+            solutions++;
         }
     } 
     result_list[get_global_id(0)] = solutions;   

@@ -14,9 +14,9 @@ fn main() {
     // let mut solution_amount = 0;
     // let mut solution_time_ms = 0;
 
-    // let args: Vec<String> = env::args().collect();
+    let args: Vec<String> = env::args().collect();
 
-    // let size : usize = args[1].parse().unwrap();
+    let size : usize = args[1].parse().unwrap();
 
     // for n in 0..size.pow(2){
 
@@ -29,7 +29,7 @@ fn main() {
     //     solution_amount += result.len();
     // }
 
-    // println!("{} milliseconden over gedaan over {} oplossingen", solution_time_ms, solution_amount);
+    // println!("{} milliseconden over gedaan over {} oplossingen via cpu", solution_time_ms, solution_amount);
 
-    let result = knights_tour_opencl(5).unwrap();
+    let result = knights_tour_opencl(size).unwrap();
 }
