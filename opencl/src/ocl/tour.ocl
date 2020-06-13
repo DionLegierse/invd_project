@@ -1,7 +1,7 @@
 __constant char x_offsets[] = {1, 2, 2, 1, -1,-2,-2,-1};
 __constant char y_offsets[] = {2, 1,-1,-2, -2,-1, 1, 2};
 
-bool is_solved(__global char * board, char size){
+bool is_solved(__global char * board){
     for(int i = 0; i < (size * size); i++){
         if(board[i] == 0){
             return false;
@@ -93,7 +93,7 @@ void init_board(char * board, char size){
     }
 }
 
-__kernel void knights_tour_solve(__global char* result_list) {
+__kernel void knights_tour_solve(__global unsigned int * result_list) {
     unsigned int solutions = 0;
 
     char nodes[size * size][8];
@@ -110,8 +110,7 @@ __kernel void knights_tour_solve(__global char* result_list) {
     get_possible_moves(&board, start, size, nodes[counter]);
     counter++;
 
-    while(!is_solved(&board, size) && counter != 0){
-        
+    while(counter != 0){
         counter--;
 
         if(get_amount_of_moves(nodes[counter]) > 0){
@@ -119,11 +118,15 @@ __kernel void knights_tour_solve(__global char* result_list) {
             counter += 2;
 
             set_move(&board, pos, &current_move);
+
             get_possible_moves(&board, pos, size, nodes[counter - 1]);
         }else{
             move_back(&board, &current_move, size, &pos);
         }
-    }
 
-    print_board(&board, size);
+        if(is_solved(&board)){
+            solutions++; 
+        }
+    } 
+    result_list[get_global_id(0)] = solutions;   
 }

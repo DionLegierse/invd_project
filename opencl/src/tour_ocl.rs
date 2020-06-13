@@ -3,16 +3,23 @@ extern crate ocl;
 
 use ocl::*;
 
-fn print_ocl_board(board : &Vec<i8>){
+fn print_ocl_board(board : &Vec<u32>){
     let size = (board.len() as f64).sqrt() as usize;
+
+    let mut cummulative_solutions : u32 = 0;
+
+    println!("Solutions per starting position:\n");
 
     for x in 0..size {
         for y in 0..size{
             print!("[{}]\t", board[y + (x * size)]);
+            cummulative_solutions += board[y + (x * size)];
         }
         print!("\n");
     }
     print!("\n");
+
+    println!("Total amount of solutions: {}", cummulative_solutions);
 }
 
 pub fn knights_tour_opencl(size : usize) -> ocl::Result<()> {
@@ -26,10 +33,10 @@ pub fn knights_tour_opencl(size : usize) -> ocl::Result<()> {
 
     let pro_que = ProQue::builder()
         .src(ocl_functions)
-        .dims(1)
+        .dims(size.pow(2))
         .build()?;
 
-    let result_list = pro_que.create_buffer::<i8>()?;
+    let result_list = pro_que.create_buffer::<u32>()?;
 
     let kernel_tour = pro_que.kernel_builder("knights_tour_solve")
         .arg(&result_list)
@@ -39,7 +46,7 @@ pub fn knights_tour_opencl(size : usize) -> ocl::Result<()> {
         kernel_tour.enq()?;
     }
 
-    let mut result = vec![0i8; result_list.len()];
+    let mut result = vec![0u32; result_list.len()];
     result_list.read(&mut result).enq()?;
 
     print_ocl_board(&result);
