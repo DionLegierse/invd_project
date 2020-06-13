@@ -3,26 +3,21 @@ extern crate ocl;
 
 use ocl::*;
 
-fn print_ocl_board(board : &Vec<u32>){
+fn get_total_solutions(board : &Vec<u32>) -> u32{
     let size = (board.len() as f64).sqrt() as usize;
 
     let mut cummulative_solutions : u32 = 0;
 
-    println!("Solutions per starting position:\n");
-
     for x in 0..size {
         for y in 0..size{
-            print!("[{}]\t", board[y + (x * size)]);
             cummulative_solutions += board[y + (x * size)];
         }
-        print!("\n");
     }
-    print!("\n");
 
-    println!("Total amount of solutions: {}", cummulative_solutions);
+    return cummulative_solutions;
 }
 
-pub fn knights_tour_opencl(size : usize) -> ocl::Result<()> {
+pub fn knights_tour_opencl(size : usize) -> ocl::Result<u32> {
 
     let ocl_functions_raw = std::fs::read_to_string("src/ocl/tour.ocl").expect("Error opening file!\n");
 
@@ -49,7 +44,7 @@ pub fn knights_tour_opencl(size : usize) -> ocl::Result<()> {
     let mut result = vec![0u32; result_list.len()];
     result_list.read(&mut result).enq()?;
 
-    print_ocl_board(&result);
+    let solutions = get_total_solutions(&result);
 
-    Ok(())
+    Ok(solutions)
 }
