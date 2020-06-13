@@ -18,20 +18,20 @@ void get_possible_moves(__global char * board, char pos, char size, char * possi
         pos_x = (pos % size) + x_offsets[i];
         pos_y = (pos / size) + y_offsets[i];
 
-        if( pos_x >= 0 &&
-            pos_x <= (size - 1) &&
-            pos_y >= 0 &&
-            pos_y <= (size - 1)){
-                new_pos = pos_x + (pos_y * size);
+        new_pos = pos_x + (pos_y * size);
 
-                if (board[new_pos] == 0){
-                    possible_moves[i] = new_pos;
-                }else{
-                    possible_moves[i] = -1;
-                }
+        if( new_pos >= 0 && (new_pos < (size * size)) &&
+            pos_x >= 0 && pos_x < size &&
+            pos_y >= 0 && pos_y < size){
+
+            if (board[new_pos] == 0){
+                possible_moves[i] = new_pos;
             }else{
                 possible_moves[i] = -1;
             }
+        }else{
+            possible_moves[i] = -1;
+        }
     }
 }
 
@@ -68,14 +68,16 @@ uchar get_amount_of_moves(char * moves){
 char get_first_move(char * moves){
     for(int i = 0; i < 8; i++){
         if(moves[i] >= 0){
-            return moves[i];
+            char move = moves[i];
+            moves[i] = -1;
+            return move;
         }
     }
-
     return -1;
 }
 
 void print_board(__global char * board, char size){
+    printf("Work item:%d\n", get_global_id(0));
     for (char x = 0; x < size; x++) {
         for (char y = 0; y < size; y++){
             printf("[%d]\t", board[y + (x * size)] );
@@ -85,29 +87,43 @@ void print_board(__global char * board, char size){
     printf("\n");
 }
 
-__kernel void knights_tour_solve(__global char* board, char start, char size  ) {
-    char possible_moves[8];
-    char nodes[100][8];
+void init_board(char * board, char size){
+    for(int i = 0; i < (size * size); i++){
+        board[i] = 0;
+    }
+}
+
+__kernel void knights_tour_solve(__global char* result_list) {
+    unsigned int solutions = 0;
+
+    char nodes[size * size][8];
     uchar counter = 0;
     char pos;
     char current_move = 1;
 
-    get_possible_moves(board, start, size, nodes[counter]);
+    char board[size * size];
+    init_board(&board, size);
+
+    char start = get_global_id(0);
+    board[start] = current_move;
+
+    get_possible_moves(&board, start, size, nodes[counter]);
     counter++;
 
-    while(!is_solved(board, size) && counter != 0){
+    while(!is_solved(&board, size) && counter != 0){
+        
         counter--;
 
         if(get_amount_of_moves(nodes[counter]) > 0){
             pos = get_first_move(nodes[counter]);
             counter += 2;
 
-            set_move(board, pos, &current_move);
-            get_possible_moves(board, pos, size, nodes[counter]);
+            set_move(&board, pos, &current_move);
+            get_possible_moves(&board, pos, size, nodes[counter - 1]);
         }else{
-            move_back(board, &current_move, size, &pos);
+            move_back(&board, &current_move, size, &pos);
         }
-
-        print_board(board, size);
     }
+
+    print_board(&board, size);
 }
