@@ -1,7 +1,7 @@
 __constant char x_offsets[] = {1, 2, 2, 1, -1,-2,-2,-1};
 __constant char y_offsets[] = {2, 1,-1,-2, -2,-1, 1, 2};
 
-bool is_solved(__global char * board){
+bool is_solved(char * board){
     for(int i = 0; i < (size * size); i++){
         if(board[i] == 0){
             return false;
@@ -11,7 +11,7 @@ bool is_solved(__global char * board){
     return true;
 }
 
-void get_possible_moves(__global char * board, char pos, char size, char * possible_moves){
+void get_possible_moves(char * board, char pos, char size, char * possible_moves){
     char pos_x, pos_y, new_pos;
 
     for(int i = 0; i < 8; i++){
@@ -35,12 +35,12 @@ void get_possible_moves(__global char * board, char pos, char size, char * possi
     }
 }
 
-void set_move(__global char * board, char pos, char * current_move){
+void set_move(char * board, char pos, char * current_move){
     (*current_move)++;
     board[pos] = (*current_move);
 }
 
-void move_back(__global char * board, char * current_move, char size, char * pos){
+void move_back(char * board, char * current_move, char size, char * pos){
     char old_pos = *pos;
     if(*current_move != 1){
         (*current_move)--;
@@ -76,16 +76,16 @@ char get_first_move(char * moves){
     return -1;
 }
 
-void print_board(__global char * board){
-    printf("Work item:%d\n", get_global_id(0));
-    for (char x = 0; x < size; x++) {
-        for (char y = 0; y < size; y++){
-            printf("[%d]\t", board[y + (x * size)] );
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
+// void print_board(__global char * board){
+//     printf("Work item:%d\n", get_global_id(0));
+//     for (char x = 0; x < size; x++) {
+//         for (char y = 0; y < size; y++){
+//             printf("[%d]\t", board[y + (x * size)] );
+//         }
+//         printf("\n");
+//     }
+//     printf("\n");
+// }
 
 void init_board(char * board, char size){
     for(int i = 0; i < (size * size); i++){
@@ -96,12 +96,12 @@ void init_board(char * board, char size){
 __kernel void knights_tour_solve(__global unsigned int * result_list) {
     unsigned int solutions = 0;
 
-    char nodes[size * size][8];
+    char nodes[36][8];
     uchar counter = 0;
     char pos;
     char current_move = 1;
 
-    char board[size * size];
+    char board[36];
     init_board(&board, size);
 
     char start = get_global_id(0);
