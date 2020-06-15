@@ -16,10 +16,10 @@ pub fn knights_tour_opencl(size : usize, start : usize) -> ocl::Result<Vec<i8>> 
 
     let pro_que = ProQue::builder()
         .src(ocl_functions)
-        .dims(1)
+        .dims(8)
         .build()?;
 
-    let result_list : Buffer<i8> = Buffer::builder().len(size.pow(2)).queue(pro_que.queue().clone()).build()?;
+    let result_list : Buffer<i8> = Buffer::builder().len(size.pow(2) * 8).queue(pro_que.queue().clone()).build()?;
 
     let kernel_tour = pro_que.kernel_builder("knights_tour_solve")
         .arg(&result_list)

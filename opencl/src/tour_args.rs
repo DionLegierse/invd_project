@@ -49,7 +49,7 @@ pub fn parse_arguments_tour(args: &Vec<String>) -> Result<TourArgs, &'static str
         }
     }
 
-    if tour_args.size <= tour_args.start {
+    if tour_args.size.pow(2) <= tour_args.start {
         return Err("Start is outside of board");
     }
 

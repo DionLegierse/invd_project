@@ -65,8 +65,17 @@ uchar get_amount_of_moves(char * moves){
     return amount;
 }
 
-char get_first_move(char * moves){
-    for(int i = 0; i < 8; i++){
+char get_first_move(char * moves, uint * offset){
+    
+    for(int i = *offset; i < 8; i++){
+        if(moves[i] >= 0){
+            char move = moves[i];
+            moves[i] = -1;
+            return move;
+        }
+    }
+
+    for(int i = (*offset - 1) ; i >= 0; i--){
         if(moves[i] >= 0){
             char move = moves[i];
             moves[i] = -1;
@@ -107,6 +116,8 @@ __kernel void knights_tour_solve(__global char * result_list, char start_pos) {
     char start = start_pos;
     board[start] = current_move;
 
+    uint offset = get_global_id(0);
+
     get_possible_moves(&board, start, size, nodes[counter]);
     counter++;
 
@@ -114,7 +125,7 @@ __kernel void knights_tour_solve(__global char * result_list, char start_pos) {
         counter--;
 
         if(get_amount_of_moves(nodes[counter]) > 0){
-            pos = get_first_move(nodes[counter]);
+            pos = get_first_move(nodes[counter], &offset);
             counter += 2;
 
             set_move(&board, pos, &current_move);
@@ -131,7 +142,9 @@ __kernel void knights_tour_solve(__global char * result_list, char start_pos) {
 
     }
 
-    for(int i = 0; i < (size*size); i++){
-        result_list[i] = board[i];
+    uint store_offset = offset * ?;
+
+    for(int i = 0; i < ?; i++){
+        result_list[store_offset + i] = board[i];
     }
 }
