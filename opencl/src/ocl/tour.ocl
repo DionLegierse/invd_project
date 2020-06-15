@@ -96,12 +96,12 @@ void init_board(char * board, char size){
 __kernel void knights_tour_solve(__global unsigned int * result_list) {
     unsigned int solutions = 0;
 
-    char nodes[36][8];
+    char nodes[?][8];
     uchar counter = 0;
     char pos;
     char current_move = 1;
 
-    char board[36];
+    char board[?];
     init_board(&board, size);
 
     char start = get_global_id(0);

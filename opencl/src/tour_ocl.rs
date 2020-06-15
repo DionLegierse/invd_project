@@ -21,10 +21,12 @@ pub fn knights_tour_opencl(size : usize) -> ocl::Result<u32> {
 
     let ocl_functions_raw = std::fs::read_to_string("src/ocl/tour.ocl").expect("Error opening file!\n");
 
-    let ocl_functions = ("__constant char size = ".to_string()) + 
+    let mut ocl_functions = ("__constant char size = ".to_string()) + 
                         (&(size as i8).to_string()) +
                         (&";\n".to_string()) + 
                         &ocl_functions_raw.to_string();
+
+    ocl_functions = ocl_functions.replace("?", &(size.pow(2)).to_string());
 
     let pro_que = ProQue::builder()
         .src(ocl_functions)
