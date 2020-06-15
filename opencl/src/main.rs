@@ -1,5 +1,4 @@
 use std::time::{Instant};
-use std::thread;
 
 extern crate ocl;
 
@@ -17,10 +16,18 @@ use std::env;
 fn run_cpu(size: usize, start: usize){
     let now = Instant::now();
     let mut tour = Tour::new(start, size);
-    let result = tour.solve();
-
+    let board = tour.solve();
     let solution_time_ms = now.elapsed().as_millis();
-    println!("{}.{} seconden over gedaan voor een oplossing via cpu", solution_time_ms / 1000,solution_time_ms % 1000);
+
+    for x in 0..size {
+        for y in 0..size {
+            let pos = x + (y * size);
+            print!("[{}]\t", board[pos]);
+        }
+        print!("\n");
+    }
+
+    println!("{}.{} seconden over deze oplossing via cpu", solution_time_ms / 1000,solution_time_ms % 1000);
 }
 
 fn run_gpu(size: usize, start: usize){

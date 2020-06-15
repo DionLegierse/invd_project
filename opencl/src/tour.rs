@@ -1,5 +1,3 @@
-pub type BoardList = Vec<Vec<i8>>;
-
 pub struct Tour{
     board: Vec<i8>,
     current_pos: usize,
@@ -92,15 +90,14 @@ impl Tour {
         print!("\n");
     }
 
-    pub fn solve(&mut self) -> BoardList{
-        let mut solutions : BoardList = Vec::new();
+    pub fn solve(&mut self) -> Vec<i8>{
         let mut nodes : Vec<Vec<usize>> = Vec::new();
 
         nodes.push(self.get_move_list());
 
         loop{
             if self.is_solved() {
-                solutions.push(self.board.to_vec());
+                return self.board.to_vec();
             }
 
             let node_option = nodes.pop();
@@ -122,21 +119,6 @@ impl Tour {
             }
         }
 
-        return solutions;
-    }
-}
-
-#[allow(dead_code)]
-pub fn print_boards(boards : &BoardList){
-    for board in boards{
-        let size = (board.len() as f64).sqrt() as usize;
-
-        for x in 0..size {
-            for y in 0..size{
-                print!("[{}]\t", board[y + (x * size)]);
-            }
-            print!("\n");
-        }
-        print!("\n");
+        return Vec::new();
     }
 }

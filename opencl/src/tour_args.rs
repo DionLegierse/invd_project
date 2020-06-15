@@ -4,14 +4,14 @@ pub enum PLATFORM {
     BOTH
 }
 
-pub struct Tour_Args {
+pub struct TourArgs {
     pub platform: PLATFORM,
     pub start: usize,
     pub size: usize
 }
 
-pub fn parse_arguments_tour(args: &Vec<String>) -> Result<Tour_Args, &'static str>{
-    let mut tour_args = Tour_Args{
+pub fn parse_arguments_tour(args: &Vec<String>) -> Result<TourArgs, &'static str>{
+    let mut tour_args = TourArgs{
         platform: PLATFORM::CPU,
         start : 0,
         size : 0
@@ -41,16 +41,12 @@ pub fn parse_arguments_tour(args: &Vec<String>) -> Result<Tour_Args, &'static st
 
     for (index, arg) in (&args).iter().enumerate(){
         if arg == "-p" {
-            let param = &args[index + 1];
-            if param.len() != 2 {
-                return Err("Incorrect start position given");
+            let size = &args[index + 1].parse::<usize>();
+
+            match size {
+                Ok(n) => tour_args.start = *n,
+                _ => return Err("Incorrect size given for -s")
             }
-
-            let chess_position : Vec<char> = param.chars().collect();
-            let letter = chess_position[0].to_digit(10).unwrap() as usize;
-            let number = chess_position[1].to_digit(10).unwrap() as usize;
-
-            tour_args.start = number + (letter * tour_args.size);
         }
     }
 
