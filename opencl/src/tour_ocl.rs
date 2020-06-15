@@ -17,7 +17,7 @@ fn get_total_solutions(board : &Vec<u32>) -> u32{
     return cummulative_solutions;
 }
 
-pub fn knights_tour_opencl(size : usize) -> ocl::Result<u32> {
+pub fn knights_tour_opencl(size : usize, dims : usize) -> ocl::Result<u32> {
 
     let ocl_functions_raw = std::fs::read_to_string("src/ocl/tour.ocl").expect("Error opening file!\n");
 
@@ -30,7 +30,7 @@ pub fn knights_tour_opencl(size : usize) -> ocl::Result<u32> {
 
     let pro_que = ProQue::builder()
         .src(ocl_functions)
-        .dims(size.pow(2))
+        .dims(dims/*size.pow(2)*/)
         .build()?;
 
     let result_list = pro_que.create_buffer::<u32>()?;
