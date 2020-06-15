@@ -1,7 +1,8 @@
 pub enum PLATFORM {
     CPU,
     GPU,
-    BOTH
+    BOTH,
+    NONE
 }
 
 pub struct TourArgs {
@@ -12,19 +13,17 @@ pub struct TourArgs {
 
 pub fn parse_arguments_tour(args: &Vec<String>) -> Result<TourArgs, &'static str>{
     let mut tour_args = TourArgs{
-        platform: PLATFORM::CPU,
+        platform: PLATFORM::NONE,
         start : 0,
         size : 0
     };
 
-    for (index, arg) in (&args).iter().enumerate(){
-        if arg == "-t" {
-            match &args[index + 1][..] {
-                "c" => tour_args.platform = PLATFORM::CPU,
-                "b" => tour_args.platform = PLATFORM::BOTH,
-                "g" => tour_args.platform = PLATFORM::GPU,
-                _ => return Err("Incorrect platform given for -t")
-            }
+    for arg in args {
+        match &arg[..] {
+            "-c" => tour_args.platform = PLATFORM::CPU,
+            "-b" => tour_args.platform = PLATFORM::BOTH,
+            "-g" => tour_args.platform = PLATFORM::GPU,
+            &_ => ()
         }
     }
 
@@ -48,6 +47,10 @@ pub fn parse_arguments_tour(args: &Vec<String>) -> Result<TourArgs, &'static str
                 _ => return Err("Incorrect size given for -s")
             }
         }
+    }
+
+    if tour_args.size <= tour_args.start {
+        return Err("Start is outside of board");
     }
 
     Ok(tour_args)

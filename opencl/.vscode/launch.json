@@ -9,7 +9,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/opencl.exe",
-            "args": ["-t", "c", "-p", "B2", "-s", "5"],
+            "args": ["-t", "g", "-p", "12", "-s", "5"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -3,21 +3,7 @@ extern crate ocl;
 
 use ocl::*;
 
-fn get_total_solutions(board : &Vec<u32>) -> u32{
-    let size = (board.len() as f64).sqrt() as usize;
-
-    let mut cummulative_solutions : u32 = 0;
-
-    for x in 0..size {
-        for y in 0..size{
-            cummulative_solutions += board[y + (x * size)];
-        }
-    }
-
-    return cummulative_solutions;
-}
-
-pub fn knights_tour_opencl(size : usize, dims : usize) -> ocl::Result<u32> {
+pub fn knights_tour_opencl(size : usize, start : usize) -> ocl::Result<Vec<i8>> {
 
     let ocl_functions_raw = std::fs::read_to_string("src/ocl/tour.ocl").expect("Error opening file!\n");
 
@@ -30,23 +16,22 @@ pub fn knights_tour_opencl(size : usize, dims : usize) -> ocl::Result<u32> {
 
     let pro_que = ProQue::builder()
         .src(ocl_functions)
-        .dims(dims/*size.pow(2)*/)
+        .dims(1)
         .build()?;
 
-    let result_list = pro_que.create_buffer::<u32>()?;
+    let result_list : Buffer<i8> = Buffer::builder().len(size.pow(2)).queue(pro_que.queue().clone()).build()?;
 
     let kernel_tour = pro_que.kernel_builder("knights_tour_solve")
         .arg(&result_list)
+        .arg(&(start as i8))
         .build()?;
 
     unsafe{ 
         kernel_tour.enq()?;
     }
 
-    let mut result = vec![0u32; result_list.len()];
+    let mut result = vec![0i8; result_list.len()];
     result_list.read(&mut result).enq()?;
 
-    let solutions = get_total_solutions(&result);
-
-    Ok(solutions)
+    Ok(result)
 }

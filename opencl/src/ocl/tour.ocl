@@ -76,16 +76,16 @@ char get_first_move(char * moves){
     return -1;
 }
 
-// void print_board(__global char * board){
-//     printf("Work item:%d\n", get_global_id(0));
-//     for (char x = 0; x < size; x++) {
-//         for (char y = 0; y < size; y++){
-//             printf("[%d]\t", board[y + (x * size)] );
-//         }
-//         printf("\n");
-//     }
-//     printf("\n");
-// }
+void print_board(char * board){
+    printf("Work item:%d\n", get_global_id(0));
+    for (char x = 0; x < size; x++) {
+        for (char y = 0; y < size; y++){
+            printf("[%d]\t", board[y + (x * size)] );
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
 
 void init_board(char * board, char size){
     for(int i = 0; i < (size * size); i++){
@@ -93,7 +93,7 @@ void init_board(char * board, char size){
     }
 }
 
-__kernel void knights_tour_solve(__global unsigned int * result_list) {
+__kernel void knights_tour_solve(__global char * result_list, char start_pos) {
     unsigned int solutions = 0;
 
     char nodes[?][8];
@@ -104,7 +104,7 @@ __kernel void knights_tour_solve(__global unsigned int * result_list) {
     char board[?];
     init_board(&board, size);
 
-    char start = get_global_id(0);
+    char start = start_pos;
     board[start] = current_move;
 
     get_possible_moves(&board, start, size, nodes[counter]);
@@ -126,7 +126,12 @@ __kernel void knights_tour_solve(__global unsigned int * result_list) {
 
         if(is_solved(&board)){
             solutions++;
+            counter = 0;
         }
-    } 
-    result_list[get_global_id(0)] = solutions;   
+
+    }
+
+    for(int i = 0; i < (size*size); i++){
+        result_list[i] = board[i];
+    }
 }
