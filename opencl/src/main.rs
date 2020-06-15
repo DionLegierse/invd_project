@@ -1,5 +1,7 @@
 use std::time::{Instant};
 use std::env;
+use std::fs::File;
+use std::io::Write;
 
 extern crate ocl;
 
@@ -11,6 +13,36 @@ use tour_ocl::knights_tour_opencl;
 
 mod tour_args;
 use tour_args::*;
+
+fn save_solution(name : String, board : &Vec<i8>, size : usize){
+    let mut html = std::fs::read_to_string("src/chessboard.html").expect("Error opening chessboard.html!\n");
+
+    html.push_str("<table>\n");
+
+    for x in 0..size {
+        html.push_str("<tr>\n");
+
+        for y in 0..size {
+            let pos = board[x + (y * size)].to_string();
+            
+            if ((x + y) % 2) == 1{
+                html.push_str(r#"<td>"#);
+            }else{
+                html.push_str(r#"<td style="background-color:grey">"#);
+            }
+            
+            html.push_str(&pos);
+            html.push_str("</td>\n");
+        }
+
+        html.push_str("<tr>\n");
+    }
+
+    html.push_str("</table>");
+
+    let mut save_file = File::create(name + &String::from(".html")).expect("Error making .html!\n");
+    save_file.write_all(html.as_bytes()).unwrap();
+}
 
 fn print_board(board : &Vec<i8>, size : usize){
     if board.len() == 0 || board.contains(&0) {
@@ -34,6 +66,7 @@ fn run_cpu(size: usize, start: usize){
     let solution_time_ms = now.elapsed().as_millis();
 
     print_board(&board, size);
+    save_solution(String::from("cpu_solutions"), &board, size);
 
     println!("{}.{} seconden over deze oplossing via cpu", solution_time_ms / 1000,solution_time_ms % 1000);
 }
@@ -44,6 +77,7 @@ fn run_gpu(size: usize, start: usize){
         let end = now.elapsed();
 
         print_board(&board, size);
+        save_solution(String::from("gpu_solutions"), &board, size);
 
         println!("{}.{} seconden over gedaan over oplossingen via gpu", end.as_secs(), now.elapsed().as_millis() % 1000);
 }
