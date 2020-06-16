@@ -15,6 +15,11 @@ mod tour_args;
 use tour_args::*;
 
 fn save_solution(name : String, board : &Vec<i8>, size : usize){
+
+    if board.len() == 0 {
+        return;
+    }
+
     let mut html = std::fs::read_to_string("src/chessboard.html").expect("Error opening chessboard.html!\n");
 
     html.push_str("<table>\n");
