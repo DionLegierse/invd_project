@@ -102,9 +102,7 @@ void init_board(char * board, char size){
     }
 }
 
-__kernel void knights_tour_solve(__global char * result_list, char start_pos) {
-    unsigned int solutions = 0;
-
+__kernel void knights_tour_solve(__global char * result_list, __global uchar * isRunning, char start_pos) {
     char nodes[?][8];
     uchar counter = 0;
     char pos;
@@ -121,7 +119,7 @@ __kernel void knights_tour_solve(__global char * result_list, char start_pos) {
     get_possible_moves(&board, start, size, nodes[counter]);
     counter++;
 
-    while(counter != 0){
+    while(*isRunning){
         counter--;
 
         if(get_amount_of_moves(nodes[counter]) > 0){
@@ -136,8 +134,7 @@ __kernel void knights_tour_solve(__global char * result_list, char start_pos) {
         }
 
         if(is_solved(&board)){
-            solutions++;
-            counter = 0;
+            *isRunning = 0;
         }
 
     }
