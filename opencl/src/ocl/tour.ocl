@@ -102,7 +102,7 @@ void init_board(char * board, char size){
     }
 }
 
-__kernel void knights_tour_solve(__global char * result_list, __global uchar * isRunning, char start_pos) {
+__kernel void knights_tour_solve(__global char * result_list, __global uchar * isRunning, __global uint * id, char start_pos) {
     char nodes[?][8];
     uchar counter = 0;
     char pos;
@@ -135,6 +135,7 @@ __kernel void knights_tour_solve(__global char * result_list, __global uchar * i
 
         if(is_solved(&board)){
             *isRunning = 0;
+            *id = get_global_id(0);
         }
 
     }
