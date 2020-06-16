@@ -52,7 +52,7 @@ fn print_board(board : &Vec<i8>, size : usize){
 
     for x in 0..size {
         for y in 0..size {
-            let pos = x + (y * size);
+            let pos = y + (x * size);
             print!("[{}]\t", board[pos]);
         }
         print!("\n");
