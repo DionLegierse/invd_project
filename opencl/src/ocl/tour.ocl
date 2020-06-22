@@ -1,16 +1,18 @@
+//The offset for all eight moves
 __constant char x_offsets[] = {1, 2, 2, 1, -1,-2,-2,-1};
 __constant char y_offsets[] = {2, 1,-1,-2, -2,-1, 1, 2};
 
+//Check if board is solved
 bool is_solved(char * board){
     for(int i = 0; i < (size * size); i++){
         if(board[i] == 0){
             return false;
         }    
     }
-
     return true;
 }
 
+//Get all possible moves and put them in the move array for the current position
 void get_possible_moves(char * board, char pos, char size, char * possible_moves){
     char pos_x, pos_y, new_pos;
 
@@ -35,11 +37,13 @@ void get_possible_moves(char * board, char pos, char size, char * possible_moves
     }
 }
 
+//Move from the current position to the new position
 void set_move(char * board, char pos, char * current_move){
     (*current_move)++;
     board[pos] = (*current_move);
 }
 
+//From the current position go one back
 void move_back(char * board, char * current_move, char size, char * pos){
     char old_pos = *pos;
     if(*current_move != 1){
@@ -55,6 +59,7 @@ void move_back(char * board, char * current_move, char size, char * pos){
     }
 }
 
+//Get the amount of possible moves for the current node
 uchar get_amount_of_moves(char * moves){
     uchar amount = 0;
     for(int i = 0; i < 8; i++){
@@ -65,6 +70,7 @@ uchar get_amount_of_moves(char * moves){
     return amount;
 }
 
+//Get the first node from the list based on the id of the work item
 char get_first_move(char * moves, uint * offset){
     
     for(int i = *offset; i < 8; i++){
@@ -85,6 +91,7 @@ char get_first_move(char * moves, uint * offset){
     return -1;
 }
 
+//Print the board to the console
 void print_board(char * board){
     printf("Work item:%d\n", get_global_id(0));
     for (char x = 0; x < size; x++) {
@@ -96,18 +103,22 @@ void print_board(char * board){
     printf("\n");
 }
 
+//Initialize the board array
 void init_board(char * board, char size){
     for(int i = 0; i < (size * size); i++){
         board[i] = 0;
     }
 }
 
+//The kernel that solves the knight's tour
 __kernel void knights_tour_solve(__global char * result_list, __global uchar * isRunning, __global uint * id, char start_pos) {
+    //Amount of nodes based on the board size
     char nodes[?][8];
     uchar counter = 0;
     char pos;
     char current_move = 1;
 
+    //Create a board based on the size
     char board[?];
     init_board(&board, size);
 
@@ -116,32 +127,44 @@ __kernel void knights_tour_solve(__global char * result_list, __global uchar * i
 
     uint offset = get_global_id(0);
 
+    //Get possible moves and put them on the move array
     get_possible_moves(&board, start, size, nodes[counter]);
+    //Increase the move array by one
     counter++;
 
     while(*isRunning){
+        //Go back one on the move array
         counter--;
 
+        //Get the amount of possible moves for the given position in the node array
         if(get_amount_of_moves(nodes[counter]) > 0){
+            //Get the first possible move from the move array
             pos = get_first_move(nodes[counter], &offset);
+            //Add two to the counter to skip the current pos to store for the next pos
             counter += 2;
 
+            //Set the move on the board from the current position
             set_move(&board, pos, &current_move);
 
+            //Get the possible moves for the new pos and store them
             get_possible_moves(&board, pos, size, nodes[counter - 1]);
         }else{
             move_back(&board, &current_move, size, &pos);
         }
 
+        //Check if the board is solved
         if(is_solved(&board)){
+            //Stop all work items
             *isRunning = 0;
+            //Store the id of the work item that found the solution
             *id = get_global_id(0);
         }
 
     }
 
     uint store_offset = offset * ?;
-
+    
+    //Store the board within the board buffer
     for(int i = 0; i < ?; i++){
         result_list[store_offset + i] = board[i];
     }

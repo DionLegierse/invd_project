@@ -1,3 +1,4 @@
+//The struct with all info for a knight's tour solver
 pub struct Tour{
     board: Vec<i8>,
     current_pos: usize,
@@ -8,6 +9,7 @@ pub struct Tour{
 }
 
 impl Tour {
+    //Contructor for the tour solver
     pub fn new(start : usize, size : usize) -> Tour{
         let mut tour = Tour{
             board: vec![0; size.pow(2)],
@@ -22,10 +24,12 @@ impl Tour {
         return tour;
     }
 
+    //Checks if the board has been solved
     pub fn is_solved(&mut self) -> bool{
         !self.board.contains(&0i8)
     }
 
+    //Returns a vector containting all possible moves from the current position
     pub fn get_move_list(&self) -> Vec<usize>{
         let mut moves = Vec::new();
 
@@ -49,6 +53,7 @@ impl Tour {
         return moves;
     }
 
+    //Move from the current position to the new
     pub fn set_move(&mut self, index : usize) -> bool{
         if self.get_move_list().contains(&index) {
             self.current_move += 1;
@@ -61,6 +66,7 @@ impl Tour {
         return false;
     }
 
+    //Go back one position from the current position
     pub fn move_back(&mut self) -> bool{
         if self.current_move != 1 {
             let pos = self.current_pos;
@@ -90,16 +96,21 @@ impl Tour {
         print!("\n");
     }
 
+    //The solving algorithm for the knight's tour
     pub fn solve(&mut self) -> Vec<i8>{
+        //Stack for possible moves per node
         let mut nodes : Vec<Vec<usize>> = Vec::new();
 
+        //Push all moves from the start position
         nodes.push(self.get_move_list());
 
         loop{
+            //Check if the board is solved and return the solution if true
             if self.is_solved() {
                 return self.board.to_vec();
             }
 
+            //Get the move list for the current position
             let node_option = nodes.pop();
             let mut node;
 
@@ -108,17 +119,25 @@ impl Tour {
                 _ => node = node_option.unwrap()
             }
 
+            //Check if their are still moves possible
             if node.len() > 0 {
+                //Get the first move in the list
                 let next_move = node.pop().unwrap();
+                //Put the moves back on the node stack
                 nodes.push(node);
-
+                
+                //Perform the move the new postion
                 self.set_move(next_move);
+
+                //Push the possible moves for the new position to the stack
                 nodes.push(self.get_move_list());
             }else{
+                //Go back one move and don't put the moves back on the stack as their are none possible
                 self.move_back();
             }
         }
 
+        //Return an empty vector if no moves are found
         return Vec::new();
     }
 }

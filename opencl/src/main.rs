@@ -14,6 +14,7 @@ use tour_ocl::knights_tour_opencl;
 mod tour_args;
 use tour_args::*;
 
+//Creates an html file for the found solution, requires the name of the file, the board and the size of the board
 fn save_solution(name : String, board : &Vec<i8>, size : usize){
 
     if board.len() == 0 {
@@ -49,6 +50,7 @@ fn save_solution(name : String, board : &Vec<i8>, size : usize){
     save_file.write_all(html.as_bytes()).unwrap();
 }
 
+//Print the board to the console, requires the board and the size of the board
 fn print_board(board : &Vec<i8>, size : usize){
     if board.len() == 0 || board.contains(&0) || board.contains(&-1i8){
         println!("Geen oplossing gevonden");
@@ -64,6 +66,7 @@ fn print_board(board : &Vec<i8>, size : usize){
     }
 }
 
+//Find a solution using the cpu, requires board size and starting position
 fn run_cpu(size: usize, start: usize){
     let now = Instant::now();
     let mut tour = Tour::new(start, size);
@@ -76,6 +79,7 @@ fn run_cpu(size: usize, start: usize){
     println!("{}.{} seconden over deze oplossing via cpu", solution_time_ms / 1000,solution_time_ms % 1000);
 }
 
+////Find a solution using the gpu, requires board size and starting position
 fn run_gpu(size: usize, start: usize){
         let now = Instant::now();
         let board = knights_tour_opencl(size, start).unwrap();
@@ -87,6 +91,7 @@ fn run_gpu(size: usize, start: usize){
         println!("{}.{} seconden over gedaan over oplossingen via gpu", end.as_secs(), now.elapsed().as_millis() % 1000);
 }
 
+//Find a solution using the cpu and gpu, requires board size and starting position
 fn run_both(size: usize, start: usize){
     run_gpu(size, start);
     run_cpu(size, start);
