@@ -50,7 +50,7 @@ fn save_solution(name : String, board : &Vec<i8>, size : usize){
 }
 
 fn print_board(board : &Vec<i8>, size : usize){
-    if board.len() == 0 || board.contains(&0) {
+    if board.len() == 0 || board.contains(&0) || board.contains(&-1i8){
         println!("Geen oplossing gevonden");
         return;
     }
@@ -88,8 +88,8 @@ fn run_gpu(size: usize, start: usize){
 }
 
 fn run_both(size: usize, start: usize){
-    run_cpu(size, start);
     run_gpu(size, start);
+    run_cpu(size, start);
 }
 
 fn main() {
